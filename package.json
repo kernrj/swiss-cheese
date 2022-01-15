@@ -1,6 +1,6 @@
 {
   "name": "swiss-cheese",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Node.js Utilities",
   "main": "compiled-js/src/swiss-cheese.js",
   "types": "src/swiss-cheese.ts",
