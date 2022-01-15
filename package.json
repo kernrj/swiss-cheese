@@ -1,0 +1,30 @@
+{
+  "name": "swiss-cheese",
+  "version": "1.0.0",
+  "description": "Node.js Utilities",
+  "main": "compiled-js/src/swiss-cheese.js",
+  "types": "src/swiss-cheese.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kernrj/swiss-cheese.git"
+  },
+  "keywords": [
+    "node.js",
+    "typescript"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+    "typescript":  "~4.5.4",
+    "@types/node": "~16.11.6"
+  },
+  "author": "Rick Kern",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/kernrj/swiss-cheese/issues"
+  },
+  "homepage": "https://github.com/kernrj/swiss-cheese#readme"
+}
