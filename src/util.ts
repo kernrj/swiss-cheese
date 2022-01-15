@@ -331,26 +331,6 @@ export function shallowCopyOwnProperties(from: any, to: any) {
   }
 }
 
-export function trimAndLowerCaseKeys(obj: any): any {
-  let lowerCaseKeys: any = {};
-  for (let key in obj) {
-    if (notSet(key) || (isSet(obj.hasOwnProperty) && !obj.hasOwnProperty(key))) {
-      continue;
-    }
-
-    let value: string = obj[key] as string;
-    if (isSet(value)) {
-      value = value.trim();
-    }
-
-    let lowerCaseKey = key.toLowerCase();
-
-    lowerCaseKeys[lowerCaseKey] = value;
-  }
-
-  return lowerCaseKeys;
-}
-
 export function getOwnedKeys(obj: any): string[] {
   if (notSet(obj)) {
     return [];

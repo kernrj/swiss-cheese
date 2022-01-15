@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  isSet, notSet,
-} from './util';
-
+import util = require('./util');
 import {getLogger} from './Logger';
 import stream = require('stream');
 
@@ -56,7 +53,7 @@ export function readStream(stream: stream.Readable, maxBodySize: number): Promis
 }
 
 export async function readStreamAsString(stream: stream.Readable, maxBodySize: number, encoding?: string): Promise<string> {
-  if (notSet(encoding)) {
+  if (util.notSet(encoding)) {
     encoding = 'utf-8';
   }
 
@@ -85,7 +82,7 @@ export function readStreamAndDiscard(stream: stream.Readable): Promise<void> {
 export async function writeStream(s: stream.Writable, buf: Buffer): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     s.write(buf, (err: Error) => {
-      if (isSet(err)) {
+      if (util.isSet(err)) {
         reject(err);
       } else {
         resolve();
@@ -125,7 +122,7 @@ export async function waitForFinish(stream: stream.Writable): Promise<any> {
 
 export async function endStream(stream: stream.Writable): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    if (notSet(stream)) {
+    if (util.notSet(stream)) {
       resolve();
       return;
     }

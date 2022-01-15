@@ -17,11 +17,7 @@
 import http = require('http');
 import https = require('https');
 import stream = require('stream');
-
-import {
-  isSet,
-  trimAndLowerCaseKeys,
-} from './util';
+import util = require('./util');
 
 import {
   IncomingMessage,
@@ -124,7 +120,7 @@ export class HttpResponse {
     this.statusCode = code;
     this.statusMessage = message;
     this.responseBodyStream = responseBodyStream;
-    this.headers = trimAndLowerCaseKeys(headers);
+    this.headers = headers;
   }
 
   responseBodyStream: stream.Readable;
@@ -243,8 +239,6 @@ export function httpMakeStreamedRequest(
 
 export function httpMakeRequest(options: RequestOptions, body: string): Promise<HttpResponse> {
   return new Promise<HttpResponse>((resolve, reject) => {
-    log.d('httpReq(): options: ' + JSON.stringify(options) + ', body: ' + body);
-
     let done: boolean = false;
     let streamedResponse: HttpResponse;
 
@@ -267,7 +261,7 @@ export function httpMakeRequest(options: RequestOptions, body: string): Promise<
 
       done = true;
 
-      if (isSet(streamedResponse)) {
+      if (util.isSet(streamedResponse)) {
         log.e('Destroying connection because promise was already resolved.');
         streamedResponse.responseBodyStream.destroy(err); //already resolved
       } else {
@@ -285,14 +279,14 @@ export function httpMakeRequest(options: RequestOptions, body: string): Promise<
       done = true;
 
       let err: Error = new Error('Connection aborted.');
-      if (isSet(streamedResponse)) {
+      if (util.isSet(streamedResponse)) {
         log.e('Destroying connection because promise was already resolved.');
         streamedResponse.responseBodyStream.destroy(err); //already resolved
       } else
         reject(err);
     });
 
-    if (isSet(body))
+    if (util.isSet(body))
       req.write(body, 'utf8');
 
     req.end();
