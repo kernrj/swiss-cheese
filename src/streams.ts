@@ -15,7 +15,7 @@
  */
 
 import util = require('./util');
-import {getLogger} from './Logger';
+import {getLogger} from './logger';
 import stream = require('stream');
 
 const log = getLogger('swiss-cheese-streams');

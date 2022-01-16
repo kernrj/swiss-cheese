@@ -29,7 +29,7 @@ import {
   URL,
 } from 'url';
 
-import {getLogger} from './Logger';
+import {getLogger} from './logger';
 
 const log = getLogger('swiss-cheese-http');
 

@@ -16,7 +16,7 @@
 
 import process = require('process');
 import child_process = require('child_process');
-import {getLogger, ILogger} from './Logger';
+import {getLogger, ILogger} from './logger';
 import fs = require('fs');
 
 const log: ILogger = getLogger('swiss-cheese-util');
