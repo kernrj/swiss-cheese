@@ -18,6 +18,7 @@ import process = require('process');
 import child_process = require('child_process');
 import {getLogger, ILogger} from './logger';
 import fs = require('fs');
+import {ScError, Status} from './error';
 
 const log: ILogger = getLogger('swiss-cheese-util');
 
@@ -31,7 +32,7 @@ export function notSet(obj: any): boolean {
 
 export function requireSet<Type>(t: Type, varName: string): Type {
   if (notSet(t)) {
-    throw new Error(`'${varName}' must be set.`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be set.`);
   }
 
   return t;
@@ -39,7 +40,7 @@ export function requireSet<Type>(t: Type, varName: string): Type {
 
 export function requireArray<T>(arr: T[], varName: string, typeChecker?: (value: T) => boolean): T[] {
   if (!Array.isArray(arr)) {
-    throw new Error(`'${varName}' must be an array, but is type ${typeof arr}, value ${JSON.stringify(arr)}`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be an array, but is type ${typeof arr}, value ${JSON.stringify(arr)}`);
   }
 
   if (notSet(typeChecker)) {
@@ -50,7 +51,7 @@ export function requireArray<T>(arr: T[], varName: string, typeChecker?: (value:
     const value = arr[i];
 
     if (!typeChecker(arr[i])) {
-      throw new Error(`'${varName}' must be an array with a specific type, but element ${i} is type ${typeof value}, value ${JSON.stringify(value)}`);
+      throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be an array with a specific type, but element ${i} is type ${typeof value}, value ${JSON.stringify(value)}`);
     }
   }
 
@@ -59,16 +60,16 @@ export function requireArray<T>(arr: T[], varName: string, typeChecker?: (value:
 
 export function requireNonEmptyArrayWithNoneUnset<Type>(arr: Type[], varName: string): Type[] {
   if (!Array.isArray(arr)) {
-    throw new Error(`'${varName}' must be a non-empty array of non-null elements, but it is type ${typeof arr}`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a non-empty array of non-null elements, but it is type ${typeof arr}`);
   } else if (arr.length === 0) {
-    throw new Error(`'${varName}' must be a non-empty array of non-null elements, but it is an empty array`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a non-empty array of non-null elements, but it is an empty array`);
   }
 
   for (let i = 0; i < arr.length; i++) {
     const element = arr[i];
 
     if (!isSet(element)) {
-      throw new Error(`'${varName}' must be a non-empty array of the same type, but element ${i} is not set`);
+      throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a non-empty array of the same type, but element ${i} is not set`);
     }
   }
 
@@ -77,18 +78,18 @@ export function requireNonEmptyArrayWithNoneUnset<Type>(arr: Type[], varName: st
 
 export function requireNonEmptyArrayOfNonEmptyStrings<Type>(arr: string[], varName: string): string[] {
   if (!Array.isArray(arr)) {
-    throw new Error(`'${varName}' must be a non-empty array of non-empty strings, but it is type ${typeof arr}`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a non-empty array of non-empty strings, but it is type ${typeof arr}`);
   } else if (arr.length === 0) {
-    throw new Error(`'${varName}' must be a non-empty array of non-empty strings, but it is an empty array`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a non-empty array of non-empty strings, but it is an empty array`);
   }
 
   for (let i = 0; i < arr.length; i++) {
     const str = arr[i];
 
     if (!isString(str)) {
-      throw new Error(`'${varName}' must be a non-empty array of non-empty strings, but element ${i} is type ${typeof str}`);
+      throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a non-empty array of non-empty strings, but element ${i} is type ${typeof str}`);
     } else if (str.length === 0) {
-      throw new Error(`'${varName}' must be a non-empty array of non-empty strings, but element ${i} is an empty string`);
+      throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a non-empty array of non-empty strings, but element ${i} is an empty string`);
     }
   }
 
@@ -99,13 +100,13 @@ export function requireSetToAnyOf<Type>(t: Type, allowedValues: Type[], varName:
   requireSet(t, varName);
 
   if (notSet(allowedValues) || !Array.isArray(allowedValues)) {
-    throw new Error(`Cannot check '${varName}': 'allowedValues' must be an array, but it is type ${typeof allowedValues}`);
+    throw new ScError(Status.INVALID_PARAMETER, `Cannot check '${varName}': 'allowedValues' must be an array, but it is type ${typeof allowedValues}`);
   }
 
   const found: boolean = allowedValues.indexOf(t) >= 0;
 
   if (!found) {
-    throw new Error(`'${varName}' must be one of ${JSON.stringify(allowedValues)}, but it is ${JSON.stringify(t)}`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be one of ${JSON.stringify(allowedValues)}, but it is ${JSON.stringify(t)}`);
   }
 
   return t;
@@ -113,7 +114,7 @@ export function requireSetToAnyOf<Type>(t: Type, allowedValues: Type[], varName:
 
 export function requireBuffer(obj: any, varName: string): Buffer {
   if (notSet(obj) || !Buffer.isBuffer(obj)) {
-    throw new Error(`'${varName}' must be a Buffer, but it is type ${typeof obj}`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a Buffer, but it is type ${typeof obj}`);
   }
 
   return obj as Buffer;
@@ -121,7 +122,7 @@ export function requireBuffer(obj: any, varName: string): Buffer {
 
 export function requireString(obj: any, varName: string): string {
   if (notSet(obj) || !isString(obj)) {
-    throw new Error(`'${varName}' must be a string, but it is type ${typeof obj}, value ${JSON.stringify(obj)}`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a string, but it is type ${typeof obj}, value ${JSON.stringify(obj)}`);
   }
 
   return obj as string;
@@ -135,7 +136,7 @@ export function requireNonEmptyString(obj: any, varName: string): string {
   const str = requireString(obj, varName);
 
   if (str.length === 0) {
-    throw new Error(`'${varName}' must not be an empty string.`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must not be an empty string.`);
   }
 
   return str;
@@ -145,11 +146,11 @@ export function requireStringStartingWith(obj: any, startsWith: string, varName:
   const str = requireString(obj, varName);
 
   if (notSet(startsWith)) {
-    throw new Error(`Error checking '${varName}': startsWith must be set.`);
+    throw new ScError(Status.INVALID_PARAMETER, `Error checking '${varName}': startsWith must be set.`);
   }
 
   if (!str.startsWith(startsWith)) {
-    throw new Error(`'${varName}' must start with '${startsWith}', but it's value is ${JSON.stringify(str)}`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must start with '${startsWith}', but it's value is ${JSON.stringify(str)}`);
   }
 
   return str;
@@ -157,7 +158,7 @@ export function requireStringStartingWith(obj: any, startsWith: string, varName:
 
 export function requireInt(n: any, varName: string): number {
   if (!Number.isSafeInteger(n)) {
-    throw new Error(`'${varName}' must be an integer, but it is type ${typeof n}, value ${JSON.stringify(n)}`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be an integer, but it is type ${typeof n}, value ${JSON.stringify(n)}`);
   }
 
   return n;
@@ -165,7 +166,7 @@ export function requireInt(n: any, varName: string): number {
 
 export function requireNumber(n: any, varName: string): number {
   if (!isNumber(n)) {
-    throw new Error(`'${varName}' must be a number, but is type ${typeof n}, value ${JSON.stringify(n)}`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a number, but is type ${typeof n}, value ${JSON.stringify(n)}`);
   }
 
   return n as number;
@@ -173,7 +174,7 @@ export function requireNumber(n: any, varName: string): number {
 
 export function requireNonNegativeNumber(n: any, varName: string): number {
   if (!Number.isFinite(n) || (n as number) < 0) {
-    throw new Error(`'${varName}' must be a non-negative number, but it is ${JSON.stringify(n)}`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a non-negative number, but it is ${JSON.stringify(n)}`);
   }
 
   return n;
@@ -181,7 +182,7 @@ export function requireNonNegativeNumber(n: any, varName: string): number {
 
 export function requireNonNegativeInt(n: any, varName: string): number {
   if (!Number.isSafeInteger(n) || (n as number) < 0) {
-    throw new Error(`'${varName}' must be a non-negative integer, but it is ${JSON.stringify(n)}`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a non-negative integer, but it is ${JSON.stringify(n)}`);
   }
 
   return n;
@@ -189,7 +190,7 @@ export function requireNonNegativeInt(n: any, varName: string): number {
 
 export function requirePositiveInt(n: any, varName: string): number {
   if (!Number.isSafeInteger(n) || (n as number) <= 0) {
-    throw new Error(`'${varName}' must be a positive integer, but it is ${JSON.stringify(n)}`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a positive integer, but it is ${JSON.stringify(n)}`);
   }
 
   return n;
@@ -199,7 +200,7 @@ export function requireIntInRange(n: any, min: number, max: number, varName: str
   const i = requireInt(n, varName);
 
   if (i < min || i > max) {
-    throw new Error(`Required range: ${min} <= ${varName} <= ${max}, but ${varName} = ${JSON.stringify(n)}`);
+    throw new ScError(Status.INVALID_PARAMETER, `Required range: ${min} <= ${varName} <= ${max}, but ${varName} = ${JSON.stringify(n)}`);
   }
 
   return i;
@@ -225,7 +226,7 @@ export function parseIntOrThrow(toParse: string, varName: string): number {
   const n: number = parseInt(toParse);
 
   if (!Number.isSafeInteger(n)) {
-    throw new Error(`Could not parse ${varName} value ${JSON.stringify(toParse)} as an integer.`);
+    throw new ScError(Status.INVALID_PARAMETER, `Could not parse ${varName} value ${JSON.stringify(toParse)} as an integer.`);
   }
 
   return n;
@@ -249,13 +250,13 @@ export function requireFilePathSync(filePath: string, varName: string): string {
   requireNonEmptyString(filePath, varName);
 
   if (!fs.existsSync(filePath)) {
-    throw new Error(`${varName} path '${filePath}' does not exist.`);
+    throw new ScError(Status.INVALID_PARAMETER, `${varName} path '${filePath}' does not exist.`);
   }
 
   const stats: fs.Stats = fs.statSync(filePath);
 
   if (!stats.isFile()) {
-    throw new Error(`${varName} path '${filePath}' is not a file.`);
+    throw new ScError(Status.INVALID_PARAMETER, `${varName} path '${filePath}' is not a file.`);
   }
 
   return filePath;
@@ -265,7 +266,7 @@ export function getStringEnvOrDie(envKey: string): string {
   if (process.env.hasOwnProperty(envKey)) {
     return process.env[envKey];
   } else {
-    throw new Error(`Required environment variable '${envKey}' is not set.`);
+    throw new ScError(Status.INVALID_PARAMETER, `Required environment variable '${envKey}' is not set.`);
   }
 }
 
@@ -281,7 +282,7 @@ export function getNumericEnvOrDie(envKey: string): number {
   if (process.env.hasOwnProperty(envKey)) {
     return +process.env[envKey];
   } else {
-    throw new Error(`Required environment variable '${envKey}' is not set.`);
+    throw new ScError(Status.INVALID_PARAMETER, `Required environment variable '${envKey}' is not set.`);
   }
 }
 
@@ -464,7 +465,7 @@ export function bufferFromChunk(chunk: any, encoding: BufferEncoding): Buffer {
   } else if (isString(chunk)) {
     return Buffer.from(chunk as string, encoding);
   } else {
-    throw new Error(`Unexpected chunk type '${typeof chunk}`);
+    throw new ScError(Status.INTERNAL_ERROR, `Unexpected chunk type '${typeof chunk}`);
   }
 }
 
@@ -522,7 +523,7 @@ export function requireNonEmptyArray<T>(arr: T[], varName: string, typeChecker?:
   requireArray(arr, varName, typeChecker);
 
   if (arr.length === 0) {
-    throw new Error(`'${varName}' must be a non-empty array`);
+    throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be a non-empty array`);
   }
 
   return arr;

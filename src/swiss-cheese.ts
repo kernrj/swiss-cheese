@@ -23,3 +23,4 @@ export * from './HttpAuth';
 export * from './Queue';
 export * from './Pool';
 export * from './BackoffTimer';
+export * from './error';

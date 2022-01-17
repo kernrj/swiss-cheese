@@ -18,6 +18,7 @@ import http = require('http');
 import https = require('https');
 import stream = require('stream');
 import util = require('./util');
+import {Status} from './error';
 
 import {
   IncomingMessage,
@@ -291,4 +292,36 @@ export function httpMakeRequest(options: RequestOptions, body: string): Promise<
 
     req.end();
   });
+}
+
+export function httpStatusFromSystemStatus(status: Status): HttpStatus {
+  switch (status) {
+    case Status.OK:
+      return HttpStatus.OK;
+    case Status.INVALID_PARAMETER:
+      return HttpStatus.BAD_REQUEST;
+    case Status.INTERNAL_ERROR:
+      return HttpStatus.INTERNAL_SERVER_ERROR;
+    case Status.EXISTS:
+      return HttpStatus.CONFLICT;
+    case Status.AUTHENTICATION_FAILED:
+      return HttpStatus.FORBIDDEN;
+    case Status.NOT_AUTHORIZED:
+      return HttpStatus.UNAUTHORIZED;
+    case Status.NOT_FOUND:
+      return HttpStatus.NOT_FOUND;
+    case Status.NOT_ALLOWED:
+      return HttpStatus.BAD_REQUEST;
+    case Status.BAD_REQUEST:
+      return HttpStatus.BAD_REQUEST;
+    case Status.EXTERNAL_ERROR:
+      return HttpStatus.INTERNAL_SERVER_ERROR;
+    case Status.HASH_MISMATCH:
+      return HttpStatus.BAD_REQUEST;
+    case Status.NOT_AVAILABLE:
+      return HttpStatus.SERVICE_UNAVAILABLE;
+    default:
+      log.w('Unknown status ' + status + ', returning INTERNAL_SERVER_ERROR.');
+      return HttpStatus.INTERNAL_SERVER_ERROR;
+  }
 }
