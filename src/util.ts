@@ -37,9 +37,21 @@ export function requireSet<Type>(t: Type, varName: string): Type {
   return t;
 }
 
-export function requireArray<Type>(arr: Type[], varName: string): Type[] {
+export function requireArray<T>(arr: T[], varName: string, typeChecker?: (value: T) => boolean): T[] {
   if (!Array.isArray(arr)) {
-    throw new Error(`'${varName}' must be a non-empty array of non-null elements, but it is type ${typeof arr}`);
+    throw new Error(`'${varName}' must be an array, but is type ${typeof arr}, value ${JSON.stringify(arr)}`);
+  }
+
+  if (notSet(typeChecker)) {
+    return arr;
+  }
+
+  for (let i = 0; i < arr.length; i++) {
+    const value = arr[i];
+
+    if (!typeChecker(arr[i])) {
+      throw new Error(`'${varName}' must be an array with a specific type, but element ${i} is type ${typeof value}, value ${JSON.stringify(value)}`);
+    }
   }
 
   return arr;
@@ -353,6 +365,14 @@ export function get<Type>(obj: any, key: string, defaultValue: Type): Type {
   return obj[key];
 }
 
+export function valueOr<Type>(value: any, defaultValue: Type): Type {
+  if (notSet(value)) {
+    return defaultValue;
+  }
+
+  return value;
+}
+
 export function utcDateWithMs(date: Date): string {
   return date.getUTCFullYear() +
     '-' +
@@ -496,4 +516,69 @@ export async function runWithRetry<T>(doTask: () => Promise<T>, retryCount?: num
   }
 
   return result;
+}
+
+export function requireNonEmptyArray<T>(arr: T[], varName: string, typeChecker?: (value: T) => boolean): T[] {
+  requireArray(arr, varName, typeChecker);
+
+  if (arr.length === 0) {
+    throw new Error(`'${varName}' must be a non-empty array`);
+  }
+
+  return arr;
+}
+
+export function getPathWithCreate(obj: any, path: any[]): any {
+  requireSet(obj, 'obj');
+  requireArray(path, 'path');
+
+  let rootObject: any = valueOr(obj, {});
+
+  for (let i = 0; i < path.length; i++) {
+    let subObject: any = rootObject[path[i]];
+
+    if (notSet(rootObject[path[i]])) {
+      subObject = {};
+      rootObject[path[i]] = subObject;
+    } else {
+      subObject = rootObject[path[i]];
+    }
+
+    rootObject = subObject;
+  }
+
+  return rootObject;
+}
+
+export function getPath<T>(obj: any, path: any[], defaultValue: T): T {
+  if (notSet(obj)) {
+    return defaultValue;
+  }
+
+  requireArray(path, 'path');
+
+  let rootObject: any = valueOr(obj, {});
+
+  for (let i = 0; i < path.length; i++) {
+    let subObject: any = rootObject[path[i]];
+
+    if (notSet(rootObject[path[i]])) {
+      return defaultValue;
+    } else {
+      subObject = rootObject[path[i]];
+    }
+
+    rootObject = subObject;
+  }
+
+  return rootObject;
+}
+
+export function set(obj: any, path: string[], value: any): void {
+  requireSet(obj, 'obj');
+  requireNonEmptyArray(path, 'path', isString);
+
+  const rootObject: any = getPathWithCreate(obj, path.slice(0, path.length - 1));
+
+  rootObject[path[path.length - 1]] = value;
 }
