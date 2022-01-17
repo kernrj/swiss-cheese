@@ -19,3 +19,6 @@ export * from './logger';
 export * from './random';
 export * from './streams';
 export * from './util';
+export * from './HttpAuth';
+export * from './Queue';
+export * from './Pool';
