@@ -1,4 +1,4 @@
-import {getLogger} from './Logger';
+import {getLogger} from './logger';
 import random = require('./random');
 import {notSet, isSet} from './util';
 
