@@ -17,7 +17,7 @@
 import {isSet, isString, notSet} from './util';
 import crypto = require('crypto');
 import random = require('./random');
-import {getLogger} from './Logger';
+import {getLogger} from './logger';
 
 const log = getLogger('HTTP Auth');
 
