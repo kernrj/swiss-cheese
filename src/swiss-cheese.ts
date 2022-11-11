@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-export * from './http';
-export * from './logger';
-export * from './random';
-export * from './streams';
-export * from './util';
-export * from './HttpAuth';
-export * from './Queue';
-export * from './Pool';
 export * from './BackoffTimer';
 export * from './error';
+export * from './http';
+export * from './HttpAuth';
+export * from './logger';
+export * from './Pool';
+export * from './Queue';
+export * from './random';
+export * from './streams';
+export * from './Timer';
+export * from './util';

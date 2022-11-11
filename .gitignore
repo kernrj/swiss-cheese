@@ -7,3 +7,5 @@ certs
 *.env
 *.config
 .idea
+src/*.js
+src/*.map

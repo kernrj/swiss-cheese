@@ -38,6 +38,13 @@ export function requireSet<Type>(t: Type, varName: string): Type {
   return t;
 }
 
+export function getEnv(envKey:string, defaultValue:string) : string{
+  if(process.env.hasOwnProperty(envKey))
+    return process.env[envKey];
+  else
+    return defaultValue;
+}
+
 export function requireArray<T>(arr: T[], varName: string, typeChecker?: (value: T) => boolean): T[] {
   if (!Array.isArray(arr)) {
     throw new ScError(Status.INVALID_PARAMETER, `'${varName}' must be an array, but is type ${typeof arr}, value ${JSON.stringify(arr)}`);
