@@ -40,6 +40,7 @@ class TimerImpl implements Timer {
     }
 
     this.resolved = true
+    clearTimeout(this.timeout);
     this.rejectPromise(new TimeoutCanceledError());
   }
 
@@ -49,6 +50,7 @@ class TimerImpl implements Timer {
     }
 
     this.resolved = true
+    clearTimeout(this.timeout);
     this.resolvePromise(null);
   }
 
